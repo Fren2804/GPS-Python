@@ -1,29 +1,32 @@
 import heapq
-import sys
-import time
 import pygame
 import random
 
 from collections import deque
 
-def set_speed(grid, cols, rows):
+def set_speed_9(grid, cols, rows):
 	for y in range(rows):
 		for x in range(cols):
 			if (grid[y][x] == 1):
 				grid[y][x] = random.randint(1, 9)
 	return grid
 
-def walls(start, goal, cols, rows, wall_probability = 0.35):
+def set_speed_99(grid, cols, rows):
+	for y in range(rows):
+		for x in range(cols):
+			if (grid[y][x] == 1):
+				grid[y][x] = random.randint(1, 99)
+	return grid
+
+def walls(start, goal, cols, rows, wall_probability = 0.30):
 	grid = [[1 for _ in range(COLS)] for _ in range(ROWS)]
 	for y in range(rows):
 		for x in range(cols):
 			if (x,y) != start and (x,y) != goal:
 				if random.random() < wall_probability:
 					grid[y][x] = 0
-
 	grid[start[1]][start[0]] = -1
 	grid[goal[1]][goal[0]] = -2	
-
 	return grid
 
 def mark_path(grid, start, goal, cols, rows):
@@ -111,7 +114,6 @@ def has_path(grid, start, goal, cols, rows):
 			next_cells.append((x, y + 1))
 		if (y - 1 >= 0 and y - 1 < rows and grid[y - 1][x] != 0):
 			next_cells.append((x, y - 1))
-
 	return None
 
 
@@ -151,13 +153,10 @@ def take_path(start, goal, came_from):
 	return path
 
 def dijkstra(grid, start, goal, cols, rows):
-	
 	dist = {(start): 0}
 	came_from = {}
 	pq = [(0, (start))]
 	visited = set()
-
-
 	while True:
 		if not pq:
 			break
@@ -199,8 +198,6 @@ def mark_dijkstra_see(grid, goal, start, cols, rows, screen, cell, width, height
 	dist = {(start): 0}
 	pq = [(0, (start))]
 	visited = set()
-
-
 	while True:
 		if not pq:
 			break
@@ -243,8 +240,6 @@ def a_func(grid, start, goal, cols, rows):
 	came_from = {}
 	pq = [(0, (start))]
 	visited = set()
-
-
 	while True:
 		if not pq:
 			break
@@ -287,8 +282,6 @@ def mark_a_see(grid, goal, start, cols, rows, screen, cell, width, height):
 	dist = {(start): 0}
 	pq = [(0, (start))]
 	visited = set()
-
-
 	while True:
 		if not pq:
 			break
@@ -335,33 +328,30 @@ COLS, ROWS = 190, 100
 W, H = COLS * CELL, ROWS * CELL
 
 screen = pygame.display.set_mode((W, H))
-pygame.display.set_caption("Grid editor (click para paredes)")
+pygame.display.set_caption("GPS dijkstra A*")
 
 clock = pygame.time.Clock()
 
 while True:
 	while True:
-
 		start_x = random.randrange(COLS)
 		start_y = random.randrange(ROWS)
 		goal_x = random.randrange(COLS)
 		goal_y = random.randrange(ROWS)
 		if (abs(start_x - goal_x) > 3 and abs(start_y - goal_y) > 3):
 			break
-
-
 	start = (start_x, start_y)
 	goal = (goal_x, goal_y)
-
 	grid_original = walls(start, goal, COLS, ROWS)
 	grid_original = has_path(grid_original, start, goal, COLS, ROWS)
 	if grid_original is not None:
 		break
+
 grid = grid_original
 grid_auxiliar_path = [row[:] for row in grid_original]
 grid_auxiliar_path = mark_path(grid_auxiliar_path, start, goal, COLS, ROWS)
 grid_auxiliar_speed = [row[:] for row in grid_original]
-grid_auxiliar_speed = set_speed(grid_auxiliar_speed, COLS, ROWS)
+grid_auxiliar_speed = set_speed_99(grid_auxiliar_speed, COLS, ROWS)
 grid_auxiliar_dijkstra = [row[:] for row in grid_original]
 grid_dijkstra = [row[:] for row in grid_original]
 path_dijkstra = dijkstra(grid_dijkstra, start, goal, COLS, ROWS)
@@ -382,18 +372,17 @@ while running:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			running = False
-
-
+		
 		elif event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:  # salir
+			if event.key == pygame.K_ESCAPE:
 				running = False
-			if event.key == pygame.K_z:  # marca el path
+			if event.key == pygame.K_z:
 				grid_path_color = not grid_path_color
 				if grid_path_color:
 					grid = grid_auxiliar_path
 				else:
 					grid = grid_original
-			if event.key == pygame.K_x:  # limpiar todo
+			if event.key == pygame.K_x:
 				mark_path_see(grid_original, start, goal, COLS, ROWS, screen, CELL, W, H)
 			if event.key == pygame.K_c:
 				grid_color = not grid_color
@@ -438,10 +427,9 @@ while running:
 					else:
 						grid = grid_original
 
-	# --- Draw ---
+
 	screen.fill((15, 15, 15))
 
-	# celdas (paredes)
 	for y in range(ROWS):
 		for x in range(COLS):
 			if grid[y][x] == 0:
@@ -454,11 +442,20 @@ while running:
 	if grid_color:
 		for y in range(ROWS):
 			for x in range(COLS):
-				if grid[y][x] == 200:
+				value = grid[y][x]
+				if value == 200:
 					pygame.draw.rect(screen, (0, 0, 140), (x * CELL, y * CELL, CELL, CELL))
-				elif grid[y][x] == 100:
+				elif value == 100:
 					pygame.draw.rect(screen, (40, 140, 0), (x * CELL, y * CELL, CELL, CELL))
-				elif grid[y][x] == 1:
+				elif 1 <= value < 50:
+					r = int(255 * value / 50)
+					color = (r, 140, 0)
+					pygame.draw.rect(screen, color, (x * CELL, y * CELL, CELL, CELL))
+				elif 50 <= value <= 99:
+					g = int(255 * (value - 50) / 49)
+					color = (255, g, 0)
+					pygame.draw.rect(screen, color, (x * CELL, y * CELL, CELL, CELL))
+				"""elif grid[y][x] == 1:
 					pygame.draw.rect(screen, (0, 140, 0), (x * CELL, y * CELL, CELL, CELL))
 				elif grid[y][x] == 2:
 					pygame.draw.rect(screen, (40, 140, 0), (x * CELL, y * CELL, CELL, CELL))
@@ -475,16 +472,11 @@ while running:
 				elif grid[y][x] == 8:
 					pygame.draw.rect(screen, (240, 180, 0), (x * CELL, y * CELL, CELL, CELL))
 				elif grid[y][x] == 9:
-					pygame.draw.rect(screen, (240, 220, 0), (x * CELL, y * CELL, CELL, CELL))
+					pygame.draw.rect(screen, (240, 220, 0), (x * CELL, y * CELL, CELL, CELL))"""
 
 
-
-
-	# start / goal
 	pygame.draw.rect(screen, (0, 255, 255), (start[0] * CELL, start[1] * CELL, CELL, CELL))
-	pygame.draw.rect(screen, (255, 0, 0), (goal[0] * CELL, goal[1] * CELL, CELL, CELL))
-
-	# líneas del grid
+	pygame.draw.rect(screen, (157, 0, 128), (goal[0] * CELL, goal[1] * CELL, CELL, CELL))
 	for x in range(COLS + 1):
 		pygame.draw.line(screen, (30, 30, 30), (x * CELL, 0), (x * CELL, H))
 	for y in range(ROWS + 1):
