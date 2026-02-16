@@ -2,3 +2,10 @@ python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
 python3 -m pip install pygame
+
+
+
+
+#Con las teclas cambiar entre un algoritmo u otro
+#Poder cambiar todo en 1 o el de entre 1 y 9    escalarlo a 1 a 100
+#Mostrar lentamente como analiza cada casilla

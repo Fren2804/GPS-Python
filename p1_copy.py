@@ -27,6 +27,19 @@ def vecinos(point):
 		vecinos_matriz.append([x, y - 1])
 	return vecinos_matriz
 
+def take_path(start, goal, came_from):
+	path = []
+	point = goal
+	while point != start:
+		point = came_from[point]
+		path.append(point)
+	path.reverse()
+	return path
+		
+	
+
+
+
 """matriz = [
     [-2, 3, 2, 9],
     [1, 7, 3, 8],
@@ -63,59 +76,45 @@ matriz = [
 ]
 
 start = (0,0)
-#goal = (3,3)
 goal = (5,5)
 
-INF = 10**18
+
 dist = {(0,0): 0}
 came_from = {}
 pq = [(0, (0,0))]
 visited = set()
 
-"""(0,0)->(0,1) = 3
-(0,0)->(1,0) = 1"""
-for i in range(300):
-	print (f"Antes {pq}")
+
+while True:
 	if not pq:
 		break
 	distance, point = heapq.heappop(pq)
-	print (f"Despues {pq}")
-	print (f"Point {point}")
 	if point == goal:
 		print(f"Win? {distance}")
+		print(f"{came_from}")
+		path = take_path(start, goal, came_from)
+		print(path)
 		break
 	if point in visited:
 		continue
 	visited.add(point)
 	vecinos_matriz = vecinos(point)
-	print(vecinos_matriz)
 	for x, y in vecinos_matriz:
 		if (x, y) in visited:
 			continue
-		"""if matriz[point[0]][point[1]] < 0:
-			value = 0
-		else:
-			value = matriz[point[0]][point[1]]"""
-		#Comprobar que la distancia de aqui no sea mayor a la que ya hay
 		if matriz[x][y] < 0:
 			value = 0
 		else:
 			value = matriz[x][y]
 		nuevo_valor = value + distance
+		"""if nuevo_valor < dist.get((x, y), INF):
+    came_from[(x, y)] = point
+    dist[(x, y)] = nuevo_valor
+    heapq.heappush(pq, (nuevo_valor, (x, y)))"""
 		if dist.get((x, y)) is None:
+			came_from[(x, y)] = (point)
 			dist[(x, y)] = nuevo_valor
 		elif nuevo_valor < dist[(x, y)]:
+			came_from[(x, y)] = (point)
 			dist[(x, y)] = nuevo_valor
 		heapq.heappush(pq, (nuevo_valor, (x, y)))
-	print()
-	print(dist)
-	print()
-	print(visited)
-	print()
-	print("-------")
-	print()
-
-
-#print(dist)
-print(visited)
-

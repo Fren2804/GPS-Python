@@ -4,6 +4,14 @@ import random
 from collections import deque
 
 
+def set_speed(grid, cols, rows):
+	for y in range(rows):
+		for x in range(cols):
+			if (grid[y][x] == 1):
+				grid[y][x] = random.randint(2, 9)
+	return grid
+
+
 def mark_path(grid, start, goal, cols, rows):
 	sx, sy = start
 	gx, gy = goal
@@ -12,17 +20,18 @@ def mark_path(grid, start, goal, cols, rows):
 	visited = set([(sx, sy)])
 
 	while q:
-		x, y = q.popleft()
-		if (x, y) == (gx, gy):
+		actual_x, actual_y = q.popleft()
+		if (actual_x, actual_y) == (gx, gy):
 			break
 
-		for dx, dy in ((1,0), (-1,0), (0,1), (0,-1)):
-			nx, ny = x + dx, y + dy
-			if 0 <= nx < cols and 0 <= ny < rows:
-				if (nx, ny) not in visited and grid[ny][nx] != 0:  # 1 = pared
-					visited.add((nx, ny))
-					grid[ny][nx] = 200
-					q.append((nx, ny))
+		for (d_x, d_y) in ((1,0), (-1,0), (0,1), (0,-1)):
+			new_x = actual_x + d_x
+			new_y = actual_y + d_y
+			if (new_x >= 0 and new_x < cols) and (new_y >= 0 and new_y < rows):
+				if (new_x, new_y) not in visited and grid[new_y][new_x] != 0:
+					q.append((new_x, new_y))
+					visited.add((new_x, new_y))
+					grid[new_y][new_x] = 200
 
 	return grid
 
@@ -37,7 +46,7 @@ def walls(start, goal, cols, rows, wall_probability = 0.35):
 	grid[start[1]][start[0]] = -1
 	grid[goal[1]][goal[0]] = -2	
 	
-	grid = has_path(grid, start, goal, cols, rows)
+	#grid = mark_path(grid, start, goal, cols, rows)
 	return grid
 
 
@@ -58,18 +67,19 @@ clock = pygame.time.Clock()
 
 while True:
 
-	xstart = random.randrange(COLS)
-	ystart = random.randrange(ROWS)
-	xgoal = random.randrange(COLS)
-	ygoal = random.randrange(ROWS)
-	if (abs(xstart - xgoal) > 3 and abs(ystart - ygoal) > 3):
+	start_x = random.randrange(COLS)
+	start_y = random.randrange(ROWS)
+	goal_x = random.randrange(COLS)
+	goal_y = random.randrange(ROWS)
+	if (abs(start_x - goal_x) > 3 and abs(start_y - goal_y) > 3):
 		break
 
 
-start = (xstart, ystart)
-goal = (xgoal, ygoal)
+start = (start_x, start_y)
+goal = (goal_x, goal_y)
 
 grid = walls(start, goal, COLS, ROWS)
+grid = set_speed(grid, start, goal, COLS, ROWS)
 
 def cell_from_mouse(pos):
 	mx, my = pos
@@ -81,7 +91,7 @@ while running:
 		if event.type == pygame.QUIT:
 			running = False
 
-		"""elif event.type == pygame.MOUSEBUTTONDOWN:
+		elif event.type == pygame.MOUSEBUTTONDOWN:
 			x, y = cell_from_mouse(event.pos)
 			if 0 <= x < COLS and 0 <= y < ROWS:
 				if event.button == 1:  # click izq: alterna pared
@@ -93,7 +103,7 @@ while running:
 
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_c:  # limpiar todo
-				grid = [[0 for _ in range(COLS)] for _ in range(ROWS)]"""
+				grid = mark_path(grid, start, goal, COLS, ROWS)
 
 	# --- Draw ---
 	screen.fill((15, 15, 15))
@@ -108,10 +118,28 @@ while running:
 		for x in range(COLS):
 			if grid[y][x] == 200:
 				pygame.draw.rect(screen, (0, 0, 140), (x * CELL, y * CELL, CELL, CELL))
+			"""elif grid[y][x] == 2:
+				pygame.draw.rect(screen, (40, 140, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 3:
+				pygame.draw.rect(screen, (80, 140, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 4:
+				pygame.draw.rect(screen, (120, 140, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 5:
+				pygame.draw.rect(screen, (160, 140, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 6:
+				pygame.draw.rect(screen, (200, 140, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 7:
+				pygame.draw.rect(screen, (240, 140, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 8:
+				pygame.draw.rect(screen, (240, 180, 0), (x * CELL, y * CELL, CELL, CELL))
+			elif grid[y][x] == 9:
+				pygame.draw.rect(screen, (240, 220, 0), (x * CELL, y * CELL, CELL, CELL))"""
+
+
 
 	# start / goal
-	pygame.draw.rect(screen, (0, 140, 0), (start[0] * CELL, start[1] * CELL, CELL, CELL))
-	pygame.draw.rect(screen, (140, 0, 0), (goal[0] * CELL, goal[1] * CELL, CELL, CELL))
+	pygame.draw.rect(screen, (0, 255, 255), (start[0] * CELL, start[1] * CELL, CELL, CELL))
+	pygame.draw.rect(screen, (255, 0, 0), (goal[0] * CELL, goal[1] * CELL, CELL, CELL))
 
 	# líneas del grid
 	for x in range(COLS + 1):
