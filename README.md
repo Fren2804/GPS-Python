@@ -19,7 +19,7 @@ Next, walls (`walls`) are generated randomly with a probability of **30%**. Then
 
 And finally, functions such as `set_speed_9` and `set_speed_99` are included, which randomly assign the speed or cost of each cell.
 
-```bash
+```
 1 Fast - 2 - 3 - 4 - 5 - ... - 99 Slow
 ```
 
