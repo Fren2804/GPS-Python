@@ -376,14 +376,6 @@ while running:
 		elif event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				running = False
-			if event.key == pygame.K_z:
-				grid_path_color = not grid_path_color
-				if grid_path_color:
-					grid = grid_auxiliar_path
-				else:
-					grid = grid_original
-			if event.key == pygame.K_x:
-				mark_path_see(grid_original, start, goal, COLS, ROWS, screen, CELL, W, H)
 			if event.key == pygame.K_c:
 				grid_color = not grid_color
 			if event.key == pygame.K_v:

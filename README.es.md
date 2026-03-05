@@ -199,3 +199,52 @@ Es simbólico, ya que según la heurística elegida pueden variar los mapas de c
 | Dijkstra  | ❌ No     | Alto            | ✅ Sí                  |
 | A*        | ✅ Sí     | Bajo            | ✅ Sí (heurística admisible) |
 
+## 🚀 Ejecución
+
+Python --verison:
+
+```bash
+Python 3.X
+```
+
+Clona el repositorio:
+
+```bash
+git clone https://github.com/Fren2804/GPS-Python.git
+cd GPS-Python
+```
+
+Instala el entorno:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install pygame
+```
+
+Ejecuta main.py:
+
+```bash
+python3 main.py
+```
+
+### Atajos
+
+- Escape: Cerrar programa
+- c: Cambiar visualización de la velocidad de las casillas
+- v: Cambiar velocidad del mapa entre v1 y v9/v99
+- b: Visualizar análisis de nodos con Dijkstra
+- g: Visualizar camino con Dijkstra
+- n: Visualizar análisis de nodos con A*
+- a: Visualizar camino con A*
+
+## 🎥 Demo Video
+
+[![Watch the video](https://img.youtube.com/vi/D4Ks7AKu88U/0.jpg)](https://www.youtube.com/watch?v=D4Ks7AKu88U)
+
+## 💻 Sistema
+
+- WSL 2
+- Ubuntu-22.04
+- Python 3.10.12
