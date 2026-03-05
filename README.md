@@ -1,4 +1,4 @@
-# 🔍 Comparación de Algoritmos de Búsqueda de Caminos en Python
+# 🔍 Comparison of Pathfinding Algorithms in Python
 
 > 🇬🇧 English | [🇪🇸 Versión en Español](README.es.md)
 
